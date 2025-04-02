@@ -1,0 +1,96 @@
+services:
+  proxy-gateway:
+    build: ./proxy-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+      - profile-service
+      - food-service
+      - workout-service
+      - sleep-service
+      - health-service
+      - notifications-service
+
+  auth-service:
+    build: ./auth-service
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+
+  profile-service:
+    build: ./profile-service
+
+  food-service:
+    build: ./food-service
+
+  workout-service:
+    build: ./workout-service
+
+  sleep-service:
+    build: ./sleep-service
+
+  health-service:
+    build: ./health-service
+
+  notifications-service:
+    build: ./notifications-service
+
+  database-service:
+    build: ./database-service
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  log-service:
+    build: ./log-service
+    depends_on:
+      - graylog
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: healthapp
+    ports:
+      - "5432:5432"
+
+  graylog:
+    image: graylog/graylog:5.0
+    environment:
+      GRAYLOG_PASSWORD_SECRET: AbCDEFGHIJKL1234superGraylogKey
+      GRAYLOG_ROOT_PASSWORD_SHA2: abcd1234hash
+      GRAYLOG_HTTP_EXTERNAL_URI: http://localhost:9000/
+      GRAYLOG_ELASTICSEARCH_VERSION: "OpenSearch"
+    ports:
+      - "9000:9000"
+    depends_on:
+      - mongo
+      - elasticsearch
+
+  mongo:
+    image: mongo:6
+
+  elasticsearch:
+    image: opensearchproject/opensearch:2.11.1
+    environment:
+        - discovery.type=single-node
+        - plugins.security.disabled=true
+    ports:
+        - "9200:9200"
+#    image: elasticsearch:7.17.10
+#    environment:
+#      discovery.type: single-node
