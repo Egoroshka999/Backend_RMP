@@ -6,91 +6,124 @@ services:
     depends_on:
       - auth-service
       - profile-service
-      - food-service
-      - workout-service
-      - sleep-service
-      - health-service
-      - notifications-service
+      - data-service
+      - report-service
+      - log-service
+    networks:
+      - app-net
 
   auth-service:
     build: ./auth-service
-    environment:
-      - REDIS_HOST=redis
     depends_on:
+      - database-service
       - redis
+    environment:
+      - DB_HOST=database-service
+      - REDIS_HOST=redis
+    networks:
+      - app-net
 
   profile-service:
     build: ./profile-service
+    depends_on:
+      - database-service
+      - redis
+    environment:
+      - DB_HOST=database-service
+      - REDIS_HOST=redis
+    networks:
+      - app-net
 
-  food-service:
-    build: ./food-service
+  data-service:
+    build: ./data-service
+    depends_on:
+      - database-service
+      - redis
+      - rabbitmq
+    environment:
+      - DB_HOST=database-service
+      - REDIS_HOST=redis
+      - RABBIT_HOST=rabbitmq
+    networks:
+      - app-net
 
-  workout-service:
-    build: ./workout-service
+  report-service:
+    build: ./report-service
+    depends_on:
+      - database-service
+      - clickhouse
+      - rabbitmq
+      - redis
+    environment:
+      - DB_HOST=database-service
+      - CLICKHOUSE_HOST=clickhouse
+      - RABBIT_HOST=rabbitmq
+      - REDIS_HOST=redis
+    networks:
+      - app-net
 
-  sleep-service:
-    build: ./sleep-service
-
-  health-service:
-    build: ./health-service
-
-  notifications-service:
-    build: ./notifications-service
+  log-service:
+    build: ./log-service
+    depends_on:
+      - database-service
+      - rabbitmq
+    environment:
+      - DB_HOST=database-service
+      - RABBIT_HOST=rabbitmq
+    networks:
+      - app-net
 
   database-service:
     build: ./database-service
     depends_on:
       - postgres
-      - rabbitmq
-
-  log-service:
-    build: ./log-service
-    depends_on:
-      - graylog
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+      - clickhouse
+    environment:
+      - POSTGRES_HOST=postgres
+      - CLICKHOUSE_HOST=clickhouse
+    networks:
+      - app-net
 
   postgres:
     image: postgres:15
+    restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: healthapp
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: app_db
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - app-net
 
-  graylog:
-    image: graylog/graylog:5.0
-    environment:
-      GRAYLOG_PASSWORD_SECRET: AbCDEFGHIJKL1234superGraylogKey
-      GRAYLOG_ROOT_PASSWORD_SHA2: abcd1234hash
-      GRAYLOG_HTTP_EXTERNAL_URI: http://localhost:9000/
-      GRAYLOG_ELASTICSEARCH_VERSION: "OpenSearch"
-    ports:
-      - "9000:9000"
-    depends_on:
-      - mongo
-      - elasticsearch
+  redis:
+    image: redis:7
+    restart: always
+    networks:
+      - app-net
 
-  mongo:
-    image: mongo:6
-
-  elasticsearch:
-    image: opensearchproject/opensearch:2.11.1
-    environment:
-        - discovery.type=single-node
-        - plugins.security.disabled=true
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.3
+    restart: always
     ports:
-        - "9200:9200"
-#    image: elasticsearch:7.17.10
-#    environment:
-#      discovery.type: single-node
+      - "8123:8123"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    networks:
+      - app-net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - "15672:15672"  # UI
+      - "5672:5672"    # AMQP
+    networks:
+      - app-net
+
+volumes:
+  pg_data:
+  clickhouse_data:
+
+networks:
+  app-net:

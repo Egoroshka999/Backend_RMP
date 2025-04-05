@@ -22,15 +22,14 @@ kotlin {
 }
 
 application {
-    mainClass.set("MainKt") // если файл src/main/kotlin/Main.kt
+    mainClass.set("com.Backend_RMP.MainKt")
 }
 
 tasks.jar {
     manifest {
-        attributes["Main-Class"] = "MainKt"
+        attributes["Main-Class"] = "com.Backend_RMP.MainKt"
     }
 
-    // Включаем классы и зависимости
     from(sourceSets.main.get().output)
 
     dependsOn(configurations.runtimeClasspath)

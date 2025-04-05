@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
@@ -9,15 +10,12 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/auth-service" />
+            <option value="$PROJECT_DIR$/data-service" />
             <option value="$PROJECT_DIR$/database-service" />
-            <option value="$PROJECT_DIR$/food-service" />
-            <option value="$PROJECT_DIR$/health-service" />
             <option value="$PROJECT_DIR$/log-service" />
-            <option value="$PROJECT_DIR$/notifications-service" />
             <option value="$PROJECT_DIR$/profile-service" />
             <option value="$PROJECT_DIR$/proxy-gateway" />
-            <option value="$PROJECT_DIR$/sleep-service" />
-            <option value="$PROJECT_DIR$/workout-service" />
+            <option value="$PROJECT_DIR$/report-service" />
           </set>
         </option>
       </GradleProjectSettings>
