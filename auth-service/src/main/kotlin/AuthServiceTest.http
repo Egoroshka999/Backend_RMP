@@ -1,0 +1,21 @@
+### Register User
+POST http://localhost:8081/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpassword"
+}
+
+### Login User
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpassword"
+}
+
+### Verify Token (поставить сюда токен из логина)
+GET http://localhost:8081/auth/verify
+Authorization: Bearer <your_token_here>
