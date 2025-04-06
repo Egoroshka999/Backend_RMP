@@ -1,5 +1,28 @@
 package com.Backend_RMP
 
+import com.Backend_RMP.routes.userRoutes
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.routing.*
+import org.jetbrains.exposed.sql.Database
+
 fun main() {
-    println("DataBase Service runned")
+    Database.connect(
+        url = "jdbc:postgresql://postgres:5432/app_db",
+        driver = "org.postgresql.Driver",
+        user = "admin",
+        password = "secret"
+    )
+
+    embeddedServer(Netty, port = 8080) {
+        install(ContentNegotiation) {
+            json()
+        }
+        routing {
+            userRoutes()
+        }
+    }.start(wait = true)
 }
