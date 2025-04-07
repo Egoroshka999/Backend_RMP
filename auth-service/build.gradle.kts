@@ -23,6 +23,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
     implementation("io.lettuce:lettuce-core:6.2.6.RELEASE")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.7.3")
 }
 
 tasks.test {

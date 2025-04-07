@@ -11,10 +11,16 @@ import io.ktor.server.routing.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlinx.coroutines.*
+import java.net.Socket
 
-fun main() {
+fun main(): Unit = runBlocking {
+    val host = System.getenv("POSTGRES_HOST") ?: "postgres"
+
+    waitForPostgres(host, 5432)
+
     Database.connect(
-        url = "jdbc:postgresql://postgres:5432/app_db",
+        url = "jdbc:postgresql://$host:5432/app_db",
         driver = "org.postgresql.Driver",
         user = "admin",
         password = "secret"
@@ -32,4 +38,19 @@ fun main() {
             userRoutes()
         }
     }.start(wait = true)
+}
+
+suspend fun waitForPostgres(host: String, port: Int) {
+    repeat(20) {
+        try {
+            Socket(host, port).use {
+                println("PostgreSQL доступен!")
+                return
+            }
+        } catch (e: Exception) {
+            println("Ожидание PostgreSQL (${it + 1}/20)...")
+            delay(1000)
+        }
+    }
+    throw RuntimeException("Не удалось подключиться к PostgreSQL")
 }

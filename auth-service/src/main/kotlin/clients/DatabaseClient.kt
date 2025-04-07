@@ -4,11 +4,19 @@ import com.Backend_RMP.models.UserDTO
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 
 class DatabaseClient {
-    private val client = HttpClient(CIO)
+    private val client = HttpClient(CIO) {
+        install(ContentNegotiation) {
+            json()
+        }
+    }
     private val baseUrl = "http://database-service:8080" // адаптировать при необходимости
 
     suspend fun findUserByUsername(username: String): UserDTO? {
@@ -20,21 +28,30 @@ class DatabaseClient {
     }
 
     suspend fun createUser(username: String, password: String): String {
-        val response: HttpResponse = client.post("$baseUrl/users") {
-            setBody(UserDTO(null, username, password))
-        }
-        val created: UserDTO = response.body()
-        return created.id ?: ""
+            val response: HttpResponse = client.post("$baseUrl/users") {
+                contentType(ContentType.Application.Json)
+                setBody(UserDTO(null, username, password))
+            }
+            val responseBody = response.bodyAsText()
+            val created: UserDTO = Json.decodeFromString(responseBody)
+            return created.id ?: ""
     }
+
 
     suspend fun checkUserCredentials(username: String, password: String): String? {
         return try {
-            val response: UserDTO = client.post("$baseUrl/users/check") {
+            val response: HttpResponse = client.post("$baseUrl/users/check") {
+                contentType(ContentType.Application.Json)
                 setBody(UserDTO(null, username, password))
-            }.body()
-            response.id
+            }
+
+            val body = response.bodyAsText()
+            val user: UserDTO = Json.decodeFromString(body)
+            user.id
         } catch (e: Exception) {
+            println("${e.message}")
             null
         }
     }
+
 }

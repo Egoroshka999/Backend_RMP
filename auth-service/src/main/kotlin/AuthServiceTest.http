@@ -18,4 +18,4 @@ Content-Type: application/json
 
 ### Verify Token (поставить сюда токен из логина)
 GET http://localhost:8081/auth/verify
-Authorization: Bearer <your_token_here>
+Authorization: Bearer 94932960-af54-4993-9be9-06b65884bb25
