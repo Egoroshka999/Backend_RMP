@@ -17,15 +17,15 @@ import kotlinx.coroutines.*
 import java.net.Socket
 
 fun main(): Unit = runBlocking {
-    val host = System.getenv("POSTGRES_HOST") ?: "localhost"
+    val host = System.getenv("POSTGRES_HOST") ?: "postgres"
 
     waitForPostgres(host, 5432)
 
     Database.connect(
         url = "jdbc:postgresql://$host:5432/app_db",
         driver = "org.postgresql.Driver",
-        user = "postgres",
-        password = "postgres"
+        user = "admin",
+        password = "secret"
     )
 
     transaction {
