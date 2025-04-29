@@ -120,16 +120,20 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    restart: always
     ports:
       - "15672:15672"  # UI
       - "5672:5672"    # AMQP
     networks:
       - app-net
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq  # Persistent data for RabbitMQ
+    restart: always
 
 volumes:
   pg_data:
   clickhouse_data:
+  rabbitmq_data:
+    driver: local
 
 networks:
   app-net:

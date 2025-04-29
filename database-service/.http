@@ -1,0 +1,8 @@
+### Send log message
+POST http://localhost:8080/logs
+Content-Type: application/json
+
+{
+  "message": "log message",
+  "level": "error"
+}
