@@ -1,6 +1,7 @@
 package com.Backend_RMP
 
-import com.Backend_RMP.routes.userRoutes
+import com.Backend_RMP.entity.*
+import com.Backend_RMP.routes.*
 import com.Backend_RMP.tables.Users
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -27,7 +28,15 @@ fun main(): Unit = runBlocking {
     )
 
     transaction {
-        SchemaUtils.create(Users)
+        SchemaUtils.create(
+            Activities,
+            Articles,
+            HealthMetrics,
+            Meals,
+            SleepRecords,
+            Users,
+            WaterIntake
+        )
     }
 
     embeddedServer(Netty, port = 8080) {
@@ -35,7 +44,13 @@ fun main(): Unit = runBlocking {
             json()
         }
         routing {
+            activityRoutes()
+            articleRoutes()
+            healthRoutes()
+            mealRoutes()
+            sleepRoutes()
             userRoutes()
+            waterRoutes()
         }
     }.start(wait = true)
 }
