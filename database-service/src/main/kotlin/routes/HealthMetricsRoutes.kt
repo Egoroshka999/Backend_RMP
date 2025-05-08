@@ -1,10 +1,7 @@
 package com.Backend_RMP.routes
 import com.Backend_RMP.entity.Activities
 import com.Backend_RMP.entity.HealthMetrics
-import com.Backend_RMP.models.ActivityDTO
 import com.Backend_RMP.models.HealthMetricDTO
-import com.Backend_RMP.models.LogDTO
-import com.Backend_RMP.tables.Logs
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
