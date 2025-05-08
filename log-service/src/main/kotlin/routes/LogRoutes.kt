@@ -20,6 +20,10 @@ class LogRoutes(private val messageHandler: LogMessageHandler) {
                     call.respond(HttpStatusCode.BadRequest, "Error processing log message: ${e.message}")
                 }
             }
+            get("/logs") {
+                val logs = messageHandler.getTop100Logs()
+                call.respond(HttpStatusCode.OK, logs)
+            }
         }
     }
 } 

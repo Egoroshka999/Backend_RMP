@@ -6,11 +6,8 @@ import io.ktor.util.Identity.encode
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.PreparedStatement
+import java.sql.*
 import java.time.LocalDateTime
-import java.sql.Timestamp
 
 class LogMessageHandler(private val config: AppConfig) {
     init {
@@ -44,6 +41,39 @@ class LogMessageHandler(private val config: AppConfig) {
                 println("Error writing log to ClickHouse: ${e.message}")
             }
         }
+    }
+
+    // Function to fetch top 100 logs from ClickHouse (GET)
+    fun getTop100Logs(): List<LogMessage> {
+        val logs = mutableListOf<LogMessage>()
+
+        try {
+            getConnection().use { conn ->
+                val query = """
+                    SELECT timestamp, level, message, source
+                    FROM logs
+                    ORDER BY timestamp DESC
+                    LIMIT 100
+                """
+                val stmt = conn.createStatement()
+                val rs: ResultSet = stmt.executeQuery(query)
+
+                while (rs.next()) {
+                    logs.add(
+                        LogMessage(
+                            timestamp = rs.getString("timestamp"),
+                            level = rs.getString("level"),
+                            message = rs.getString("message"),
+                            source = rs.getString("source")
+                        )
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            println("Error fetching logs: ${e.message}")
+        }
+
+        return logs
     }
 
     private fun createLogsTableIfNotExists() {
