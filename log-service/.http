@@ -4,5 +4,12 @@ Content-Type: application/json
 
 {
   "message": "hey",
-  "level": "error"
+  "level": "error",
+  "source": "service-x"
 }
+
+### Send log message
+GET http://localhost:8081/logs
+Content-Type: application/json
+
+

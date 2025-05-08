@@ -1,9 +1,7 @@
 package com.Backend_RMP
 
 import com.Backend_RMP.routes.userRoutes
-import com.Backend_RMP.routes.logRoutes
 import com.Backend_RMP.tables.Users
-import com.Backend_RMP.tables.Logs
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.application.*
@@ -29,7 +27,7 @@ fun main(): Unit = runBlocking {
     )
 
     transaction {
-        SchemaUtils.create(Users, Logs)
+        SchemaUtils.create(Users)
     }
 
     embeddedServer(Netty, port = 8080) {
@@ -38,7 +36,6 @@ fun main(): Unit = runBlocking {
         }
         routing {
             userRoutes()
-            logRoutes()
         }
     }.start(wait = true)
 }
