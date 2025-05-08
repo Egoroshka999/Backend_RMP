@@ -34,8 +34,9 @@ dependencies {
     
     
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-    
-    
+    implementation("com.clickhouse:clickhouse-jdbc:0.4.6")
+
+
     testImplementation(kotlin("test"))
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
 

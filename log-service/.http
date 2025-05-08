@@ -4,5 +4,6 @@ Content-Type: application/json
 
 {
   "message": "hey",
-  "level": "error"
+  "level": "error",
+  "source": "service-x"
 }

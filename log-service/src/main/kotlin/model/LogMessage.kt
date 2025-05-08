@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class LogMessage(
     val message: String,
     val level: String = "INFO",
+    var source : String,
 ) 
