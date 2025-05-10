@@ -1,0 +1,57 @@
+import com.Backend_RMP.config.AppConfig
+import com.Backend_RMP.models.LoadTestResult
+import com.Backend_RMP.services.RequestGenerator
+import com.Backend_RMP.services.RequestHandler
+import com.Backend_RMP.services.StatisticsCollector
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.http.*;
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import kotlin.time.measureTime
+
+
+class LoadTester(private val config: AppConfig) {
+    private val client = HttpClient(CIO) {
+        install(HttpTimeout) {
+            requestTimeoutMillis = config.REQUEST_TIMEOUT
+        }
+    }
+
+    private val statsCollector = StatisticsCollector()
+    private val requestGenerator = RequestGenerator(config)
+    private val requestHandler = RequestHandler(client, statsCollector)
+
+    fun runTest(): LoadTestResult {
+        val duration = measureTime {
+            runBlocking {
+                val requestsPerCoroutine = config.TOTAL_REQUESTS / config.PARALLEL_COROUTINES
+
+                (1..config.PARALLEL_COROUTINES).map {
+                    launch(Dispatchers.IO) {
+                        repeat(requestsPerCoroutine) {
+                            requestHandler.executeRequest(requestGenerator.generateRandomRequest())
+                        }
+                    }
+                }.forEach { it.join() }
+            }
+        }
+
+        return LoadTestResult(
+            timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            totalRequests = config.TOTAL_REQUESTS,
+            byCategory = statsCollector.getResults(),
+            duration = duration.toString()
+        )
+    }
+
+    fun shutdown() {
+        client.close()
+    }
+}
