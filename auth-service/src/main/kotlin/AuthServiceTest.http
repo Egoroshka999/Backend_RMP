@@ -4,7 +4,12 @@ Content-Type: application/json
 
 {
   "username": "testuser",
-  "password": "testpassword"
+  "password": "testpassword",
+  "age": 30,
+  "weight": 72.5,
+  "height": 178.0,
+  "gender": "male",
+  "goal": "похудеть"
 }
 
 ### Login User
