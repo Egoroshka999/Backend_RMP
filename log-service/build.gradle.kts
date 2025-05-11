@@ -59,6 +59,8 @@ tasks.jar {
         attributes["Main-Class"] = "com.Backend_RMP.MainKt"
     }
 
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
     from(sourceSets.main.get().output)
 
     dependsOn(configurations.runtimeClasspath)

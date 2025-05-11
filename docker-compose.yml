@@ -64,16 +64,16 @@ services:
     networks:
       - app-net
 
-#  log-service:
-#    build: ./log-service
-#    depends_on:
-#      - database-service
-#      - rabbitmq
-#    environment:
-#      - DB_HOST=database-service
-#      - RABBIT_HOST=rabbitmq
-#    networks:
-#      - app-net
+  log-service:
+    build: ./log-service
+    depends_on:
+      - database-service
+      - rabbitmq
+    environment:
+      - DB_HOST=database-service
+      - RABBIT_HOST=rabbitmq
+    networks:
+      - app-net
 
   database-service:
     build: ./database-service
