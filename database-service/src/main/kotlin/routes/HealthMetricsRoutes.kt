@@ -8,6 +8,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+
 fun Route.healthRoutes() {
     route("/health") {
         post {
@@ -39,6 +41,18 @@ fun Route.healthRoutes() {
                     }
             }
             call.respond(metrics)
+        }
+
+        delete("/{id}") {
+            val metricId = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respondText("Invalid ID")
+            val deleted = transaction {
+                HealthMetrics.deleteWhere { HealthMetrics.id eq metricId } > 0
+            }
+            if (deleted) {
+                call.respond(mapOf("message" to "Health metric deleted successfully"))
+            } else {
+                call.respondText("Health metric not found", status = io.ktor.http.HttpStatusCode.NotFound)
+            }
         }
     }
 }

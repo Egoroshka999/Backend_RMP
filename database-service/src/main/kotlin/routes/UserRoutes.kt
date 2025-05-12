@@ -8,6 +8,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+
 
 fun Route.userRoutes() {
     route("/users") {
@@ -83,6 +85,18 @@ fun Route.userRoutes() {
                 )
             } else {
                 call.respondText("Unauthorized")
+            }
+        }
+
+        delete("/{id}") {
+            val userId = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respondText("Invalid ID")
+            val deleted = transaction {
+                Users.deleteWhere { Users.id eq userId } > 0
+            }
+            if (deleted) {
+                call.respond(mapOf("message" to "User deleted successfully"))
+            } else {
+                call.respondText("User not found", status = io.ktor.http.HttpStatusCode.NotFound)
             }
         }
     }

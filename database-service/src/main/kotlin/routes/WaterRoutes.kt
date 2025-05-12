@@ -10,6 +10,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+
+
 // Routes
 fun Route.waterRoutes() {
     route("/water") {
@@ -38,6 +41,18 @@ fun Route.waterRoutes() {
                     }
             }
             call.respond(records)
+        }
+
+        delete("/{id}") {
+            val waterId = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respondText("Invalid ID")
+            val deleted = transaction {
+                WaterIntake.deleteWhere { WaterIntake.id eq waterId } > 0
+            }
+            if (deleted) {
+                call.respond(mapOf("message" to "Water intake record deleted successfully"))
+            } else {
+                call.respondText("Water intake record not found", status = io.ktor.http.HttpStatusCode.NotFound)
+            }
         }
     }
 }
