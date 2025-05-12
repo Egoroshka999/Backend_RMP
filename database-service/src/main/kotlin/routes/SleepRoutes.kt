@@ -8,6 +8,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 fun Route.sleepRoutes() {
     route("/sleep") {
@@ -57,6 +58,18 @@ fun Route.sleepRoutes() {
             }
 
             call.respond(mapOf("status" to "updated"))
+        }
+
+        delete("/{id}") {
+            val sleepId = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respondText("Invalid ID")
+            val deleted = transaction {
+                SleepRecords.deleteWhere { SleepRecords.id eq sleepId } > 0
+            }
+            if (deleted) {
+                call.respond(mapOf("message" to "Sleep record deleted successfully"))
+            } else {
+                call.respondText("Sleep record not found", status = io.ktor.http.HttpStatusCode.NotFound)
+            }
         }
     }
 }

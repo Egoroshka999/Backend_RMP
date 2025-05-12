@@ -7,6 +7,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+
 fun Route.mealRoutes() {
     route("/meals") {
         post {
@@ -42,6 +44,18 @@ fun Route.mealRoutes() {
                     }
             }
             call.respond(meals)
+        }
+
+        delete("/{mealId}") {
+            val mealId = call.parameters["mealId"] ?: return@delete call.respondText("Missing meal ID")
+            val deleted = transaction {
+                Meals.deleteWhere { Meals.id eq mealId.toInt() }
+            }
+            if (deleted > 0) {
+                call.respond(mapOf("message" to "Meal deleted successfully"))
+            } else {
+                call.respondText("Meal not found", status = io.ktor.http.HttpStatusCode.NotFound)
+            }
         }
     }
 }
