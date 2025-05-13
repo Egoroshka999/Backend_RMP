@@ -1,0 +1,229 @@
+### ==========================================
+### Аутентификация и пользователи
+### ==========================================
+
+### 1. Регистрация пользователя (базовая)
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpassword"
+}
+
+### 2. Регистрация пользователя (расширенная)
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "fulluser1112211",
+  "password": "testpassword21",
+  "age": 30,
+  "weight": 72.5,
+  "height": 178.0,
+  "gender": "male",
+  "goal": "похудеть"
+}
+
+### 3. Вход пользователя
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "fulluser111221",
+  "password": "testpassword2"
+}
+
+### 4. Проверка токена (вставьте токен из ответа на запрос логина)
+GET http://localhost:8080/auth/verify
+Authorization: Bearer ваш-токен-здесь
+
+### 5. Получение информации о пользователе (защищенный, требует токен)
+GET http://localhost:8080/users/by-username/testuser
+Authorization: Bearer ваш-токен-здесь
+
+### 6. Попытка получения информации о пользователе без токена (должна вернуть ошибку)
+GET http://localhost:8080/users/by-username/testuser
+
+### 7. Проверка учетных данных пользователя
+POST http://localhost:8080/users/check
+Content-Type: application/json
+Authorization: Bearer ваш-токен-здесь
+
+{
+  "username": "testuser",
+  "password": "testpassword"
+}
+
+### ==========================================
+### Приемы пищи
+### ==========================================
+
+### 8. Добавление записи о приеме пищи
+POST http://localhost:8080/meals
+Content-Type: application/json
+Authorization: Bearer 717b38e1-2bf6-4a7a-9184-775b0dc1df42
+
+{
+  "userId": "1",
+  "datetime": "2025-05-12T12:00:00",
+  "mealType": "обед",
+  "calories": 500,
+  "proteins": 30,
+  "fats": 15,
+  "carbs": 50
+}
+
+### 9. Получение записей о приемах пищи
+GET http://localhost:8080/meals/1
+Authorization: 717b38e1-2bf6-4a7a-9184-775b0dc1df42
+
+### 10. Удаление записи о приеме пищи
+DELETE http://localhost:8080/meals/1
+Authorization: Bearer 717b38e1-2bf6-4a7a-9184-775b0dc1df42
+
+### ==========================================
+### Сон
+### ==========================================
+
+### 11. Добавление записи о сне
+POST http://localhost:8080/sleep
+Content-Type: application/json
+Authorization: Bearer 717b38e1-2bf6-4a7a-9184-775b0dc1df42
+
+{
+  "userId": "1",
+  "date": "2025-05-12",
+  "startTime": "22:00:00",
+  "endTime": "06:00:00",
+  "quality": 8
+}
+
+### 12. Получение записей о сне
+GET http://localhost:8080/sleep/1
+Authorization: Bearer 717b38e1-2bf6-4a7a-9184-775b0dc1df42
+
+### 13. Обновление записи о сне
+PUT http://localhost:8080/sleep/1
+Content-Type: application/json
+Authorization: Bearer 717b38e1-2bf6-4a7a-9184-775b0dc1df42
+
+{
+  "userId": "1",
+  "date": "2025-05-12",
+  "startTime": "23:00:00",
+  "endTime": "07:00:00",
+  "quality": 9
+}
+
+### 14. Удаление записи о сне
+DELETE http://localhost:8080/sleep/1
+Authorization: Bearer 717b38e1-2bf6-4a7a-9184-775b0dc1df42
+
+### ==========================================
+### Физическая активность
+### ==========================================
+
+### 15. Добавление записи о физической активности
+POST http://localhost:8080/activities
+Content-Type: application/json
+Authorization: Bearer 717b38e1-2bf6-4a7a-9184-775b0dc1df42
+
+{
+  "userId": "1",
+  "date": "2025-05-12",
+  "type": "бег",
+  "duration": 30,
+  "steps": 5000
+}
+
+### 16. Получение записей о физической активности
+GET http://localhost:8080/activities/1
+Authorization: Bearer 717b38e1-2bf6-4a7a-9184-775b0dc1df42
+
+### 17. Удаление записи о физической активности
+DELETE http://localhost:8080/activities/1
+Authorization: Bearer 717b38e1-2bf6-4a7a-9184-775b0dc1df42
+
+### ==========================================
+### Потребление воды
+### ==========================================
+
+### 18. Добавление записи о потреблении воды
+POST http://localhost:8080/water
+Content-Type: application/json
+Authorization: Bearer717b38e1-2bf6-4a7a-9184-775b0dc1df42
+
+{
+  "userId": "1",
+  "datetime": "2025-05-12T08:00:00",
+  "amount": 300
+}
+
+### 19. Получение записей о потреблении воды
+GET http://localhost:8080/water/1
+Authorization: Bearer ваш-токен-здесь
+
+### 20. Удаление записи о потреблении воды
+DELETE http://localhost:8080/water/1
+Authorization: Bearer ваш-токен-здесь
+
+### ==========================================
+### Показатели здоровья
+### ==========================================
+
+### 21. Добавление записи о показателях здоровья
+POST http://localhost:8080/health
+Content-Type: application/json
+Authorization: Bearer ваш-токен-здесь
+
+{
+  "userId": "1",
+  "datetime": "2025-05-12T09:00:00",
+  "pulse": 75,
+  "bloodPressure": "120/80",
+  "deviceData": "{\"steps\":8000,\"calories\":350}"
+}
+
+### 22. Получение записей о показателях здоровья
+GET http://localhost:8080/health/3
+Authorization: Bearer 717b38e1-2bf6-4a7a-9184-775b0dc1df42
+
+### 23. Удаление записи о показателях здоровья
+DELETE http://localhost:8080/health/1
+Authorization: Bearer 717b38e1-2bf6-4a7a-9184-775b0dc1df42
+
+### ==========================================
+### Статьи
+### ==========================================
+
+### 24. Добавление статьи
+POST http://localhost:8080/articles
+Content-Type: application/json
+Authorization: Bearer ваш-токен-здесь
+
+{
+  "title": "Здоровое питание",
+  "content": "Статья о правильном питании и его влиянии на здоровье...",
+  "author": "Доктор Иванов",
+  "imageUrl": "https://example.com/healthy-food.jpg"
+}
+
+### 25. Получение всех статей
+GET http://localhost:8080/articles
+Authorization: Bearer ваш-токен-здесь
+
+### 26. Удаление статьи
+DELETE http://localhost:8080/articles/1
+Authorization: Bearer ваш-токен-здесь
+
+### ==========================================
+### Тесты ограничений доступа
+### ==========================================
+
+### 27. Попытка доступа к защищенному ресурсу без токена (должна вернуть 403)
+GET http://localhost:8080/meals/1
+
+### 28. Попытка прямого доступа к логам (должна вернуть 404 - ресурс не найден)
+GET http://localhost:8080/logs
+Authorization: Bearer ваш-токен-здесь
