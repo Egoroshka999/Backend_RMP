@@ -31,7 +31,7 @@ class ProxyService(private val config: AppConfig) {
             try {
                 call.receiveText()
             } catch (e: Exception) {
-                println("Ошибка при получении тела запроса: ${e.message}")
+                println("Ошибка при получении тела запроса: $e")
                 ""
             }
         } else ""
