@@ -16,7 +16,15 @@ class AuthService {
         if (existing != null) {
             return HttpStatusCode.Conflict to AuthResponse("User already exists", null)
         }
-        val userId = db.createUser(request.username, request.password)
+        val userId = db.createUser(
+            request.username,
+            request.password,
+            request.age,
+            request.weight,
+            request.height,
+            request.gender,
+            request.goal
+        )
         val token = UUID.randomUUID().toString()
         redis.saveToken(token, userId)
         return HttpStatusCode.Created to AuthResponse("User registered", token)

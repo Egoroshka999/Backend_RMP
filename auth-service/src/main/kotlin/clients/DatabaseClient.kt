@@ -27,10 +27,29 @@ class DatabaseClient {
         }
     }
 
-    suspend fun createUser(username: String, password: String): String {
+    suspend fun createUser(
+        username: String,
+        password: String,
+        age: Int? = null,
+        weight: Float? = null,
+        height: Float? = null,
+        gender: String? = null,
+        goal: String? = null
+    ): String {
             val response: HttpResponse = client.post("$baseUrl/users") {
                 contentType(ContentType.Application.Json)
-                setBody(UserDTO(null, username, password))
+                setBody(
+                    UserDTO(
+                        null,
+                        username,
+                        password,
+                        age,
+                        weight,
+                        height,
+                        gender,
+                        goal
+                    )
+                )
             }
             val responseBody = response.bodyAsText()
             val created: UserDTO = Json.decodeFromString(responseBody)

@@ -30,6 +30,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation("org.jetbrains.exposed:exposed-kotlin-datetime:0.41.1")
+    implementation("org.slf4j:slf4j-simple:2.0.9")
 }
 
 tasks.test {

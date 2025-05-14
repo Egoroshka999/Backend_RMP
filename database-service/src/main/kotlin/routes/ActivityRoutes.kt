@@ -8,6 +8,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 fun Route.activityRoutes() {
     route("/activities") {
@@ -40,6 +41,18 @@ fun Route.activityRoutes() {
                     }
             }
             call.respond(activities)
+        }
+
+        delete("/{id}") {
+            val id = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respondText("Invalid ID")
+            val deleted = transaction {
+                Activities.deleteWhere { Activities.id eq id } > 0
+            }
+            if (deleted) {
+                call.respondText("Activity deleted successfully")
+            } else {
+                call.respondText("Activity not found")
+            }
         }
     }
 }

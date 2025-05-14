@@ -1,8 +1,167 @@
-### Send log message
-POST http://localhost:8080/logs
+
+### User Routes ###
+
+### Create User
+POST http://localhost:8080/users
 Content-Type: application/json
 
 {
-  "message": "log message",
-  "level": "error"
+  "username": "testusers",
+  "password": "password123",
+  "age": 25,
+  "weight": 70.5,
+  "height": 175.0,
+  "gender": "male",
+  "goal": "weight_loss"
 }
+
+### Get User by Username
+GET http://localhost:8080/users/by-username/testuser
+
+### Check User Credentials
+POST http://localhost:8080/users/check
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123",
+  "age": 25,
+  "weight": 70.5,
+  "height": 175.0,
+  "gender": "male",
+  "goal": "weight_loss"
+}
+
+### Delete User
+DELETE http://localhost:8080/users/9
+
+### Activity Routes ###
+
+### Create Activity
+POST http://localhost:8080/activities
+Content-Type: application/json
+
+{
+  "userId": "1",
+  "date": "2024-03-20",
+  "type": "running",
+  "duration": 30,
+  "steps": 5000
+}
+
+### Get User Activities
+GET http://localhost:8080/activities/1
+
+### Delete Activity
+DELETE http://localhost:8080/activities/1
+
+### Article Routes ###
+
+### Create Article
+POST http://localhost:8080/articles
+Content-Type: application/json
+
+{
+  "title": "Healthy Eating Tips",
+  "content": "Here are some tips for healthy eating...",
+  "author": "John Doe",
+  "imageUrl": "https://example.com/image.jpg"
+}
+
+### Get All Articles
+GET http://localhost:8080/articles
+
+### Delete Article
+DELETE http://localhost:8080/articles/1
+
+### Health Metrics Routes ###
+
+### Create Health Metric
+POST http://localhost:8080/health
+Content-Type: application/json
+
+{
+  "userId": "1",
+  "datetime": "2024-03-20T10:00:00",
+  "pulse": 75,
+  "bloodPressure": "120/80",
+  "deviceData": "Fitbit data"
+}
+
+### Get User Health Metrics
+GET http://localhost:8080/health/1
+
+### Delete Health Metric
+DELETE http://localhost:8080/health/1
+
+### Meal Routes ###
+
+### Create Meal
+POST http://localhost:8080/meals
+Content-Type: application/json
+
+{
+  "userId": "1",
+  "datetime": "2024-03-20T12:00:00",
+  "mealType": "lunch",
+  "calories": 500,
+  "proteins": 30,
+  "fats": 15,
+  "carbs": 60
+}
+
+### Get User Meals
+GET http://localhost:8080/meals/1
+
+### Delete Meal
+DELETE http://localhost:8080/meals/1
+
+### Sleep Routes ###
+
+### Create Sleep Record
+POST http://localhost:8080/sleep
+Content-Type: application/json
+
+{
+  "userId": "1",
+  "date": "2024-03-20",
+  "startTime": "22:00:00",
+  "endTime": "06:00:00",
+  "quality": 15
+}
+
+### Get User Sleep Records
+GET http://localhost:8080/sleep/1
+
+### Update Sleep Record
+PUT http://localhost:8080/sleep/1
+Content-Type: application/json
+
+{
+  "userId": "1",
+  "date": "2024-03-20",
+  "startTime": "22:30:00",
+  "endTime": "06:30:00",
+  "quality": 10
+}
+
+### Delete Sleep Record
+DELETE http://localhost:8080/sleep/1
+
+### Water Routes ###
+
+### Create Water Intake
+POST http://localhost:8080/water
+Content-Type: application/json
+
+{
+  "userId": "1",
+  "datetime": "2024-03-20T14:00:00",
+  "amount": 250
+}
+
+### Get User Water Intake
+GET http://localhost:8080/water/1
+
+### Delete Water Intake
+DELETE http://localhost:8080/water/1
