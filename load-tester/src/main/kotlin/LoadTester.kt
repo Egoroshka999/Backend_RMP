@@ -1,3 +1,4 @@
+import auth.TokenProvider
 import com.Backend_RMP.config.AppConfig
 import com.Backend_RMP.models.LoadTestResult
 import com.Backend_RMP.services.RequestGenerator
@@ -17,20 +18,20 @@ import java.time.format.DateTimeFormatter
 import kotlin.time.measureTime
 
 
-class LoadTester(private val config: AppConfig) {
-    private val client = HttpClient(CIO) {
-        install(HttpTimeout) {
-            requestTimeoutMillis = config.REQUEST_TIMEOUT
-        }
-    }
+class LoadTester(
+    private val config: AppConfig,
+    private val client: HttpClient,
+    private val requestGenerator: RequestGenerator
+) {
 
     private val statsCollector = StatisticsCollector()
-    private val requestGenerator = RequestGenerator(config)
     private val requestHandler = RequestHandler(client, statsCollector)
 
     fun runTest(): LoadTestResult {
         val duration = measureTime {
             runBlocking {
+                TokenProvider.init(client)
+
                 val requestsPerCoroutine = config.TOTAL_REQUESTS / config.PARALLEL_COROUTINES
 
                 (1..config.PARALLEL_COROUTINES).map {

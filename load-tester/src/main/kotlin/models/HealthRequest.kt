@@ -1,5 +1,6 @@
 package com.Backend_RMP.models
 
+import auth.TokenProvider
 import com.Backend_RMP.config.AppConfig
 import com.Backend_RMP.config.RequestCategory
 import io.ktor.http.*
@@ -10,6 +11,17 @@ sealed class HealthRequest(
     open val method: HttpMethod,
     open val path: String
 ) {
+
+//    data class RegisterRequest(
+//        private val user: String,
+//        private val password: String
+//    ) : HealthRequest(
+//        RequestCategory.AUTH,
+//        HttpMethod.Post,
+//        "/auth/register"
+//    ) {
+//        val body = """{"username": "$user", "password": "$password"}"""
+//    }
 
     /*
      TODO Тут представлены примеры запросов я их НЕ ТЕСТИЛ СДЕЛАНО ТОЛЬКО СТРУКТУРА т.к. НА момент написания нет GATEWAY
@@ -24,28 +36,28 @@ sealed class HealthRequest(
         val body = """{"username": "$user", "password": "${AppConfig.TEST_PASSWORD}"}"""
     }
 
-    data object GetSleepStats : HealthRequest(
+    data class GetSleepStats(val userId: String) : HealthRequest(
         RequestCategory.GET_SLEEP,
         HttpMethod.Get,
-        "/api/sleep/stats"
+        "/sleep/${userId}"
     ) {
-        val authHeader = "Сюда вставить токен после авторизации"
+        val authHeader = "Bearer ${TokenProvider.getToken()}"
     }
 
-    data object GetActivitiesStats : HealthRequest(
+    data class GetActivitiesStats(val userId: String) : HealthRequest(
         RequestCategory.GET_ACTIVITIES,
         HttpMethod.Get,
-        "/api/activities/stats"
+        "/activities/${userId}"
     ) {
-        val authHeader = "Сюда вставить токен после авторизации"
+        val authHeader = "Bearer ${TokenProvider.getToken()}"
     }
 
     data object PostSleepData : HealthRequest(
         RequestCategory.POST_SLEEP,
         HttpMethod.Post,
-        "/api/sleep"
+        "/sleep"
     ) {
-        val authHeader = "Сюда вставить токен после авторизации"
+        val authHeader = "Bearer ${TokenProvider.getToken()}"
         val body = """{
             "hours": 8,
             "quality": 1
