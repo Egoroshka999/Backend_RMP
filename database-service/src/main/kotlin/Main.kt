@@ -44,20 +44,27 @@ fun main(): Unit = runBlocking {
         )
     }
 
-    embeddedServer(Netty, port = config.serverPort) {
-        install(ContentNegotiation) {
-            json()
-        }
-        routing {
-            activityRoutes(messageHandler)
-            articleRoutes(messageHandler)
-            healthRoutes(messageHandler)
-            mealRoutes(messageHandler)
-            sleepRoutes(messageHandler)
-            userRoutes(messageHandler)
-            waterRoutes(messageHandler)
-        }
-    }.start(wait = true)
+    try {
+        messageHandler.start()
+        embeddedServer(Netty, port = config.serverPort) {
+            install(ContentNegotiation) {
+                json()
+            }
+            routing {
+                activityRoutes(messageHandler)
+                articleRoutes(messageHandler)
+                healthRoutes(messageHandler)
+                mealRoutes(messageHandler)
+                sleepRoutes(messageHandler)
+                userRoutes(messageHandler)
+                waterRoutes(messageHandler)
+            }
+        }.start(wait = true)
+    } catch (e: Exception) {
+        println("Service error: ${e.message}")
+    } finally {
+        messageHandler.stop()
+    }
 }
 
 suspend fun waitForPostgres(host: String, port: Int) {
