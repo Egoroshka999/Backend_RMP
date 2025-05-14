@@ -1,5 +1,6 @@
 package com.Backend_RMP
 
+import com.Backend_RMP.config.AppConfig
 import com.Backend_RMP.entity.*
 import com.Backend_RMP.routes.*
 import com.Backend_RMP.service.MessageProducerService

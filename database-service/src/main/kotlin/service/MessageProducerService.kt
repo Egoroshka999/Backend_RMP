@@ -1,6 +1,6 @@
 package com.Backend_RMP.service
 
-import com.Backend_RMP.AppConfig
+import com.Backend_RMP.config.AppConfig
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory

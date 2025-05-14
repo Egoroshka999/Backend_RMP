@@ -1,4 +1,4 @@
-package com.Backend_RMP
+package com.Backend_RMP.config
 
 import io.github.cdimascio.dotenv.dotenv
 
