@@ -67,11 +67,10 @@ services:
   log-service:
     build: ./log-service
     depends_on:
-      - database-service
-      - rabbitmq
-    environment:
-      - DB_HOST=database-service
-      - RABBIT_HOST=rabbitmq
+      clickhouse:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     networks:
       - app-net
 
@@ -80,8 +79,10 @@ services:
     ports:
       - "8083:8080"
     depends_on:
-      - postgres
-      - clickhouse
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       - POSTGRES_HOST=postgres
       - CLICKHOUSE_HOST=clickhouse
@@ -126,14 +127,18 @@ services:
     networks:
       - app-net
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq  # Persistent data for RabbitMQ
+      - rabbitmq_data:/var/lib/rabbitmq
     restart: always
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "is_running" ]
+      interval: 10s
+      timeout: 10s
+      retries: 2
 
 volumes:
   pg_data:
   clickhouse_data:
   rabbitmq_data:
-    driver: local
 
 networks:
   app-net:

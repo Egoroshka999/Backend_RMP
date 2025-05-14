@@ -26,6 +26,9 @@ dependencies {
 
     implementation("org.postgresql:postgresql:42.6.0")
 
+    implementation("com.rabbitmq:amqp-client:5.18.0")
+    implementation("io.github.cdimascio:dotenv-java:2.2.4")
+
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")

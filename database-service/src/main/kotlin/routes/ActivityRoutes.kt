@@ -1,16 +1,20 @@
 package com.Backend_RMP.routes
 
 import com.Backend_RMP.entity.Activities
+import com.Backend_RMP.entity.LogMessage
 import com.Backend_RMP.models.ActivityDTO
+import com.Backend_RMP.service.MessageProducerService
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
-fun Route.activityRoutes() {
+fun Route.activityRoutes(producer: MessageProducerService) {
     route("/activities") {
         post {
             val activity = call.receive<ActivityDTO>()
@@ -23,6 +27,13 @@ fun Route.activityRoutes() {
                     it[steps] = activity.steps
                 }.value
             }
+
+            val log = LogMessage(
+                message = "Created activity with ID: $id",
+                source = "POST /activities"
+            )
+            producer.sendMessage(Json.encodeToString(log))
+
             call.respond(mapOf("id" to id))
         }
 
