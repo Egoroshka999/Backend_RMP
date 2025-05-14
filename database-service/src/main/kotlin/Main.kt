@@ -50,12 +50,12 @@ fun main(): Unit = runBlocking {
         }
         routing {
             activityRoutes(messageHandler)
-            articleRoutes()
-            healthRoutes()
-            mealRoutes()
-            sleepRoutes()
-            userRoutes()
-            waterRoutes()
+            articleRoutes(messageHandler)
+            healthRoutes(messageHandler)
+            mealRoutes(messageHandler)
+            sleepRoutes(messageHandler)
+            userRoutes(messageHandler)
+            waterRoutes(messageHandler)
         }
     }.start(wait = true)
 }
