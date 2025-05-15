@@ -35,6 +35,10 @@ fun Application.configureProxy(proxyService: ProxyService) {
             post("/check") {
                 proxyRequest(call, "${proxyService.getServiceUrl("/users")}/users/check", proxyService)
             }
+            delete ("/{userId}") {
+                val userId = call.parameters["userId"] ?: ""
+                proxyRequest(call, "${proxyService.getServiceUrl("/users")}/users/$userId", proxyService)
+            }
         }
 
         // Meals routes
@@ -139,7 +143,7 @@ private suspend fun proxyRequest(call: ApplicationCall, targetUrl: String, proxy
         val proxyResponse = proxyService.proxyRequest(call, targetUrl)
         val responseBody = proxyResponse.bodyAsText()
 
-        println("Получен ответ со статусом: ${proxyResponse.status}")
+        println("Получен ответ со статусом: ${proxyResponse.status}. Длина тела ответа: ${proxyResponse.bodyAsText().length}")
 
         call.respond(
             status = proxyResponse.status,
