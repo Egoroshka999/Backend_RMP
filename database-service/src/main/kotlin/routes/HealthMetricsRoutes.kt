@@ -1,19 +1,29 @@
 package com.Backend_RMP.routes
 import com.Backend_RMP.entity.Activities
 import com.Backend_RMP.entity.HealthMetrics
+import com.Backend_RMP.entity.LogMessage
 import com.Backend_RMP.models.HealthMetricDTO
+import com.Backend_RMP.service.MessageProducerService
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
-fun Route.healthRoutes() {
+fun Route.healthRoutes(producer: MessageProducerService) {
     route("/health") {
         post {
             val metric = call.receive<HealthMetricDTO>()
+
+            producer.sendMessage(Json.encodeToString(LogMessage(
+                message = "Received health with user ID: ${metric.userId}",
+                source = "POST /health"
+            )))
+
             val id = transaction {
                 HealthMetrics.insertAndGetId {
                     it[user] = metric.userId.toInt()
@@ -23,6 +33,13 @@ fun Route.healthRoutes() {
                     it[deviceData] = metric.deviceData
                 }.value
             }
+
+            val log = LogMessage(
+                message = "Created health with ID: $id",
+                source = "POST /health"
+            )
+            producer.sendMessage(Json.encodeToString(log))
+
             call.respond(mapOf("id" to id))
         }
 
