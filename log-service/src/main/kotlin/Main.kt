@@ -23,7 +23,6 @@ fun main(): Unit = runBlocking {
     
     try {
         consumerService.start()
-        
         embeddedServer(Netty, port = config.serverPort) {
             install(ContentNegotiation) {
                 json()

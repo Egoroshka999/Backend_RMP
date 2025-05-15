@@ -1,7 +1,9 @@
 package com.Backend_RMP
 
+import com.Backend_RMP.config.AppConfig
 import com.Backend_RMP.entity.*
 import com.Backend_RMP.routes.*
+import com.Backend_RMP.service.MessageProducerService
 import com.Backend_RMP.tables.Users
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -16,16 +18,19 @@ import kotlinx.coroutines.*
 import java.net.Socket
 
 fun main(): Unit = runBlocking {
-    val host = System.getenv("POSTGRES_HOST") ?: "postgres"
+    val config = AppConfig.load()
 
+    val host = config.postgresHost
     waitForPostgres(host, 5432)
 
     Database.connect(
-        url = "jdbc:postgresql://$host:5432/app_db",
+        url = config.postgresDsn,
         driver = "org.postgresql.Driver",
-        user = "admin",
-        password = "secret"
+        user = config.postgresUser,
+        password = config.postgresPass
     )
+
+    val messageHandler = MessageProducerService(config)
 
     transaction {
         SchemaUtils.create(
@@ -39,20 +44,27 @@ fun main(): Unit = runBlocking {
         )
     }
 
-    embeddedServer(Netty, port = 8080) {
-        install(ContentNegotiation) {
-            json()
-        }
-        routing {
-            activityRoutes()
-            articleRoutes()
-            healthRoutes()
-            mealRoutes()
-            sleepRoutes()
-            userRoutes()
-            waterRoutes()
-        }
-    }.start(wait = true)
+    try {
+        messageHandler.start()
+        embeddedServer(Netty, port = config.serverPort) {
+            install(ContentNegotiation) {
+                json()
+            }
+            routing {
+                activityRoutes(messageHandler)
+                articleRoutes(messageHandler)
+                healthRoutes(messageHandler)
+                mealRoutes(messageHandler)
+                sleepRoutes(messageHandler)
+                userRoutes(messageHandler)
+                waterRoutes(messageHandler)
+            }
+        }.start(wait = true)
+    } catch (e: Exception) {
+        println("Service error: ${e.message}")
+    } finally {
+        messageHandler.stop()
+    }
 }
 
 suspend fun waitForPostgres(host: String, port: Int) {
