@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "2.0.20"
+    kotlin("plugin.serialization") version "2.0.20"
     application
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.20"
 }
 
 group = "com.Backend_RMP"
@@ -18,6 +18,7 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:2.3.7")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.7")
     // Сериализация
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     // Корутины
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
@@ -38,12 +39,12 @@ kotlin {
 }
 
 application {
-    mainClass.set("com.Backend_RMP.LoadTesterKt")
+    mainClass.set("com.Backend_RMP.MainKt")
 }
 
 tasks.jar {
     manifest {
-        attributes["Main-Class"] = "com.Backend_RMP.LoadTesterKt"
+        attributes["Main-Class"] = "com.Backend_RMP.MainKt"
     }
 
     from(sourceSets.main.get().output)

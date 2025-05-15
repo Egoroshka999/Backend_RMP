@@ -18,6 +18,7 @@ class RequestHandler(
                 is HealthRequest.GetSleepStats -> handleGetRequest(request)
                 is HealthRequest.GetActivitiesStats -> handleGetRequest(request)
                 is HealthRequest.PostSleepData -> handlePostRequest(request)
+                is HealthRequest.PostActivitiesData -> handlePostRequest(request)
             }
 
             if (response.status.isSuccess()) {
@@ -32,7 +33,7 @@ class RequestHandler(
 
     private suspend fun handleAuthRequest(request: HealthRequest.AuthRequest): HttpResponse {
         return client.post("${AppConfig.TARGET_URL}${request.path}") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json) //TODO утвердить формат и заменить на подходящий
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
             setBody(request.body)
         }
     }
@@ -47,9 +48,14 @@ class RequestHandler(
         }
     }
 
-    private suspend fun handlePostRequest(request: HealthRequest.PostSleepData): HttpResponse {
+    private suspend fun handlePostRequest(request: HealthRequest): HttpResponse {
         return client.post("${AppConfig.TARGET_URL}${request.path}") {
-            header(HttpHeaders.Authorization, request.authHeader)
+            when (request) {
+                is HealthRequest.PostSleepData -> header(HttpHeaders.Authorization, request.authHeader)
+                is HealthRequest.PostActivitiesData -> header(HttpHeaders.Authorization, request.authHeader)
+                else -> throw IllegalArgumentException("Invalid POST request type")
+            }
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
             setBody(request.body)
         }
     }

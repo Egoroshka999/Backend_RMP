@@ -1,11 +1,22 @@
 package com.Backend_RMP.utils
 
-import com.Backend_RMP.config.AppConfig
 import com.Backend_RMP.models.LoadTestResult
-import io.ktor.http.ContentDisposition.Companion.File
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
-object ResultLogger {
+class ResultLogger(private val dirPath: String) {
+
+    val fullPath: String
+
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
+
+    init {
+        val timestamp = dateFormat.format(Date())
+        val fileName = "load_test_$timestamp.log"
+        fullPath = "$dirPath/$fileName"
+    }
+
     fun logToFile(result: LoadTestResult) {
         val logEntry = buildString {
             appendLine("[${result.timestamp}] Load test completed:")
@@ -19,7 +30,7 @@ object ResultLogger {
             appendLine("-".repeat(50))
         }
 
-        File("logs").mkdirs()
-        File(AppConfig.LOG_FILE_PATH).appendText("$logEntry\n")
+        File(dirPath).mkdirs()
+        File(fullPath).writeText(logEntry)
     }
 }

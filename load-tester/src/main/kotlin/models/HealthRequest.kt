@@ -4,42 +4,37 @@ import auth.TokenProvider
 import com.Backend_RMP.config.AppConfig
 import com.Backend_RMP.config.RequestCategory
 import io.ktor.http.*
-import java.util.*
+import java.time.LocalDate
+import java.time.LocalTime
+import kotlin.random.Random
 
 sealed class HealthRequest(
     open val category: RequestCategory,
     open val method: HttpMethod,
-    open val path: String
+    open val path: String,
+    open val body: String?
 ) {
 
-//    data class RegisterRequest(
-//        private val user: String,
-//        private val password: String
-//    ) : HealthRequest(
-//        RequestCategory.AUTH,
-//        HttpMethod.Post,
-//        "/auth/register"
-//    ) {
-//        val body = """{"username": "$user", "password": "$password"}"""
-//    }
-
-    /*
-     TODO Тут представлены примеры запросов я их НЕ ТЕСТИЛ СДЕЛАНО ТОЛЬКО СТРУКТУРА т.к. НА момент написания нет GATEWAY
-     */
-    data class AuthRequest(
-        private val user: String
-    ) : HealthRequest(
+    data class AuthRequest(override val path: String) : HealthRequest(
         RequestCategory.AUTH,
         HttpMethod.Post,
-        "/auth/login"
-    ) {
-        val body = """{"username": "$user", "password": "${AppConfig.TEST_PASSWORD}"}"""
-    }
+        path,
+        """{
+                "username": "${AppConfig.TEST_USER}",
+                "password": "${AppConfig.TEST_PASSWORD}",
+                "age": "${AppConfig.TEST_AGE}",
+                "weight": "${AppConfig.TEST_WEIGHT}",
+                "height": "${AppConfig.TEST_HEIGHT}",
+                "gender": "${AppConfig.TEST_GENDER}",
+                "goal": "${AppConfig.TEST_GOAL}"
+            }""".trimIndent()
+    )
 
     data class GetSleepStats(val userId: String) : HealthRequest(
         RequestCategory.GET_SLEEP,
         HttpMethod.Get,
-        "/sleep/${userId}"
+        "/sleep/${userId}",
+        null
     ) {
         val authHeader = "Bearer ${TokenProvider.getToken()}"
     }
@@ -47,22 +42,40 @@ sealed class HealthRequest(
     data class GetActivitiesStats(val userId: String) : HealthRequest(
         RequestCategory.GET_ACTIVITIES,
         HttpMethod.Get,
-        "/activities/${userId}"
+        "/activities/${userId}",
+        null
     ) {
         val authHeader = "Bearer ${TokenProvider.getToken()}"
     }
 
-    data object PostSleepData : HealthRequest(
+    data class PostSleepData(val userId: String) : HealthRequest(
         RequestCategory.POST_SLEEP,
         HttpMethod.Post,
-        "/sleep"
+        "/sleep",
+        """{
+            "userId": "$userId",
+            "date": "${LocalDate.now()}",
+            "startTime": "${LocalTime.now().minusHours(Random.nextLong(3, 11))}",
+            "endTime": "${LocalTime.now()}",
+            "quality": "${Random.nextInt(1, 6)}",
+        }""".trimIndent()
     ) {
         val authHeader = "Bearer ${TokenProvider.getToken()}"
-        val body = """{
-            "hours": 8,
-            "quality": 1
-        }""".trimIndent()
     }
 
+    data class PostActivitiesData(val userId: String) : HealthRequest(
+        RequestCategory.POST_ACTIVITIES,
+        HttpMethod.Post,
+        "/activities",
+        """{
+            "userId": "$userId",
+            "date": "${LocalDate.now()}",
+            "type": ${arrayOf("walking", "running").random()},
+            "duration": "${Random.nextInt(5, 150)}",
+            "steps": "${Random.nextInt(100, 15000)}"
+        }""".trimIndent()
+    ) {
+        val authHeader = "Bearer ${TokenProvider.getToken()}"
+    }
 
 }

@@ -1,3 +1,5 @@
+package tester
+
 import auth.TokenProvider
 import com.Backend_RMP.config.AppConfig
 import com.Backend_RMP.models.LoadTestResult
@@ -5,14 +7,9 @@ import com.Backend_RMP.services.RequestGenerator
 import com.Backend_RMP.services.RequestHandler
 import com.Backend_RMP.services.StatisticsCollector
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.http.*;
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.time.measureTime
@@ -28,7 +25,7 @@ class LoadTester(
     private val requestHandler = RequestHandler(client, statsCollector)
 
     fun runTest(): LoadTestResult {
-        val duration = measureTime {
+        val durationSeconds = measureTime {
             runBlocking {
                 TokenProvider.init(client)
 
@@ -48,7 +45,7 @@ class LoadTester(
             timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
             totalRequests = config.TOTAL_REQUESTS,
             byCategory = statsCollector.getResults(),
-            duration = duration.toString()
+            duration = durationSeconds.toString()
         )
     }
 
