@@ -20,6 +20,7 @@ dependencies {
     // Сериализация
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
     // Корутины
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     // AtomicFU

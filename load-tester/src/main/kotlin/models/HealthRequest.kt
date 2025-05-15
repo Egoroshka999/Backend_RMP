@@ -4,9 +4,12 @@ import auth.TokenProvider
 import com.Backend_RMP.config.AppConfig
 import com.Backend_RMP.config.RequestCategory
 import io.ktor.http.*
-import java.time.LocalDate
-import java.time.LocalTime
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.hours
 
 sealed class HealthRequest(
     open val category: RequestCategory,
@@ -52,30 +55,38 @@ sealed class HealthRequest(
         RequestCategory.POST_SLEEP,
         HttpMethod.Post,
         "/sleep",
-        """{
-            "userId": "$userId",
-            "date": "${LocalDate.now()}",
-            "startTime": "${LocalTime.now().minusHours(Random.nextLong(3, 11))}",
-            "endTime": "${LocalTime.now()}",
-            "quality": "${Random.nextInt(1, 6)}",
-        }""".trimIndent()
+        null
     ) {
         val authHeader = "Bearer ${TokenProvider.getToken()}"
+        private val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        private val nowMinusHours = Clock.System.now().minus(Random.nextLong(3, 11).hours).toLocalDateTime(TimeZone.currentSystemDefault())
+
+        private val nowNoNanos = LocalTime(now.hour, now.minute, now.second)
+        private val nowMinusHoursNoNanos = LocalTime(nowMinusHours.hour, nowMinusHours.minute, nowMinusHours.second)
+
+        override val body = """{
+            "userId": "$userId",
+            "date": "${Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date}",
+            "startTime": "${nowMinusHoursNoNanos}",
+            "endTime": "${nowNoNanos}",
+            "quality": ${Random.nextInt(1, 6)},
+        }""".trimIndent()
     }
 
     data class PostActivitiesData(val userId: String) : HealthRequest(
         RequestCategory.POST_ACTIVITIES,
         HttpMethod.Post,
         "/activities",
-        """{
+        null
+    ) {
+        val authHeader = "Bearer ${TokenProvider.getToken()}"
+        override val body = """{
             "userId": "$userId",
-            "date": "${LocalDate.now()}",
+            "date": "${Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date}",
             "type": ${arrayOf("walking", "running").random()},
             "duration": "${Random.nextInt(5, 150)}",
             "steps": "${Random.nextInt(100, 15000)}"
         }""".trimIndent()
-    ) {
-        val authHeader = "Bearer ${TokenProvider.getToken()}"
     }
 
 }
