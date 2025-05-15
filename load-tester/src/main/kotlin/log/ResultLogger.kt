@@ -17,7 +17,7 @@ class ResultLogger(private val dirPath: String) {
         fullPath = "$dirPath/$fileName"
     }
 
-    fun logToFile(result: LoadTestResult) {
+    fun logToFile(result: LoadTestResult): String {
         val logEntry = buildString {
             appendLine("[${result.timestamp}] Load test completed:")
             appendLine("Total requests: ${result.totalRequests}")
@@ -32,5 +32,6 @@ class ResultLogger(private val dirPath: String) {
 
         File(dirPath).mkdirs()
         File(fullPath).writeText(logEntry)
+        return logEntry
     }
 }

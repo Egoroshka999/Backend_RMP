@@ -27,6 +27,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:atomicfu:0.21.0")
     // Логирование
     implementation("ch.qos.logback:logback-classic:1.4.11")
+    implementation("com.rabbitmq:amqp-client:5.18.0")
     // Тестирование
     testImplementation(kotlin("test"))
 }

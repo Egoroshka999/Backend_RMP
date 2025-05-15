@@ -12,9 +12,12 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import log.LogMessageProducer
+import models.LogMessage
 import tester.LoadTester
 import java.io.IOException
 
@@ -23,6 +26,7 @@ class MainRunner {
     private val config = AppConfig
     private val logger = ResultLogger(config.LOG_DIR_PATH)
     private var userId: String = ""
+    private val logMessageProducer: LogMessageProducer = LogMessageProducer(config)
 
     private val client = HttpClient(CIO) {
         install(HttpTimeout) {
@@ -34,6 +38,8 @@ class MainRunner {
     }
 
     fun run(): Unit = runBlocking {
+        logMessageProducer.start()
+
         println("Load testing started")
 
         try {
@@ -46,7 +52,16 @@ class MainRunner {
             val result = loadTester.runTest()
 
             println("Load testing ended, writing results to file...")
-            logger.logToFile(result)
+            val log = logger.logToFile(result)
+
+            logMessageProducer.sendMessage(
+                Json.encodeToString(
+                    LogMessage(
+                        message = log,
+                        source = logger.fullPath
+                    )
+                )
+            )
             println("Finished. See logs: ${logger.fullPath}")
 
         } catch (e: IOException) {
@@ -58,6 +73,7 @@ class MainRunner {
         } finally {
             deleteTestUser(client)
             println("Deleted test user ${config.TEST_USER}")
+            logMessageProducer.stop()
             client.close()
         }
     }

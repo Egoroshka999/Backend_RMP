@@ -13,4 +13,11 @@ object AppConfig {
     const val TEST_HEIGHT = 178.0
     const val TEST_GENDER = "male"
     const val TEST_GOAL = "похудеть"
+
+    const val rabbitHost = "localhost"
+    const val rabbitPort = 5672
+    const val rabbitUsername = "guest"
+    const val rabbitPassword = "guest"
+    const val rabbitQueueName = "log_queue"
+    const val rabbitVirtualHost = "/"
 }

@@ -8,4 +8,4 @@
 - Отправитель запросов - [RequestHandler](/src/main/kotlin/services/RequestHandler.kt)
 - Сборщик статистики по запросам - [StatisticsCollector](/src/main/kotlin/services/StatisticsCollector.kt)
 - Запускатор тестов - [LoadTester](/src/main/kotlin/tester/LoadTester.kt)
-- Логгер в файл и LogService - [ResultLogger](/src/main/kotlin/utils/ResultLogger.kt)
+- Логгер в файл и LogService - [ResultLogger](/src/main/kotlin/log/ResultLogger.kt)
