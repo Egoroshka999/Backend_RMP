@@ -95,6 +95,8 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: app_db
+    ports:
+      - "5454:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
     networks:
